@@ -20,7 +20,7 @@ function describeArc(cx, cy, radius, startAngle, endAngle) {
 
 const COLORS = ['#FF7F50', '#FFB6C1', '#FFD700', '#87CEFA', '#98FB98', '#DDA0DD', '#FFA07A', '#B0E0E6'];
 
-export default function Wheel({ names = [], colors, roundsMin = 4, roundsMax = 6 }) {
+export default function Wheel({ names = [], colors, roundsMin = 4, roundsMax = 6, onSpinEnd }) {
   const theme = useTheme();
   const styles = getStyles(theme);
   const rotation = useRef(new Animated.Value(0)).current;
@@ -44,11 +44,15 @@ export default function Wheel({ names = [], colors, roundsMin = 4, roundsMax = 6
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     }).start(() => {
-      setWinner(names[chosen]);
+      const winnerName = names[chosen];
+      setWinner(winnerName);
       setSpinning(false);
       // keep rotation value normalized
       const normalized = finalDeg % 360;
       rotation.setValue(normalized);
+      if (typeof onSpinEnd === 'function') {
+        try { onSpinEnd(winnerName); } catch (e) { console.warn('onSpinEnd error', e); }
+      }
     });
   };
 

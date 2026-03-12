@@ -1,9 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, TextInput, Button, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
+import { Modal, View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import { useTheme } from '../src/ThemeContext';
 import DEFAULT_THEME, { PRESET_THEMES } from '../src/theme';
 
-export default function PremiumModal({ visible, onClose, isPremium, onPurchase, currentThemeName = 'Professional', onSave, roundsMin = 4, roundsMax = 6 }) {
+export default function PremiumModal({
+  visible,
+  onClose,
+  isPremium,
+  onPurchase,
+  onRestore,
+  currentThemeName = 'Professional',
+  onSave,
+  roundsMin = 4,
+  roundsMax = 6,
+  iapProducts = [],
+  purchaseLoading = false,
+}) {
   const theme = useTheme();
   const styles = getStyles(theme);
 
@@ -27,18 +39,15 @@ export default function PremiumModal({ visible, onClose, isPremium, onPurchase, 
 
   const freeThemeName = DEFAULT_THEME.name || 'Professional';
 
-  const renderTile = ({ item: [name, t] }) => {
+  const renderTile = ({ item }) => {
+    const [name, t] = item;
     const active = selectedTheme === name;
     const locked = !isPremium && name !== freeThemeName;
-
-    const handlePress = () => {
-      if (!locked) setSelectedTheme(name);
-    };
 
     return (
       <TouchableOpacity
         style={[styles.tile, active && styles.tileActive]}
-        onPress={handlePress}
+        onPress={() => !locked && setSelectedTheme(name)}
         disabled={locked}
         activeOpacity={locked ? 1 : 0.7}
       >
@@ -52,12 +61,15 @@ export default function PremiumModal({ visible, onClose, isPremium, onPurchase, 
         {locked && (
           <View style={styles.lockOverlay} pointerEvents="none">
             <Text style={styles.lockIcon}>🔒</Text>
-            {/* <Text style={styles.lockText}>Locked</Text> */}
+            <Text style={styles.lockText}>Locked</Text>
           </View>
         )}
       </TouchableOpacity>
     );
   };
+
+  const premiumProd = (iapProducts || []).find((p) => ((p.productId || '').toLowerCase().includes('premium'))) || (iapProducts && iapProducts[0]);
+  const priceLabel = premiumProd && (premiumProd.localizedPrice || premiumProd.price || premiumProd.formattedPrice || premiumProd.priceString || premiumProd.price) || null;
 
   return (
     <Modal visible={visible} transparent animationType="slide">
@@ -68,20 +80,45 @@ export default function PremiumModal({ visible, onClose, isPremium, onPurchase, 
           {!isPremium ? (
             <>
               <Text style={styles.info}>Unlock UI themes and advanced spin controls.</Text>
-              <FlatList data={themeEntries} renderItem={renderTile} keyExtractor={(item) => item[0]} horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12 }} />
+
+              <FlatList
+                data={themeEntries}
+                renderItem={renderTile}
+                keyExtractor={(item) => item[0]}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                style={{ marginTop: 12 }}
+              />
+
+              <View style={{ marginTop: 8 }}>
+                <Text style={[styles.info, { fontSize: 13 }]}>
+                  {priceLabel ? `Price: ${priceLabel}` : 'Price: (set in App Store / Play Console)'}
+                </Text>
+              </View>
+
               <View style={{ marginTop: 16 }}>
-                {/* <TouchableOpacity
+                <TouchableOpacity
                   style={[styles.saveButton, selectedTheme !== freeThemeName && { opacity: 0.5 }]}
                   onPress={() => onSave({ themeName: selectedTheme, min: roundsMin, max: roundsMax })}
                   disabled={selectedTheme !== freeThemeName}
                 >
                   <Text style={styles.saveText}>Use Free Theme</Text>
                 </TouchableOpacity>
-                <View style={{ height: 10 }} /> */}
-                <TouchableOpacity style={styles.purchaseButton} onPress={onPurchase}>
-                  <Text style={styles.purchaseText}>Purchase Premium (simulate)</Text>
-                </TouchableOpacity>
+
                 <View style={{ height: 10 }} />
+
+                <TouchableOpacity style={styles.purchaseButton} onPress={onPurchase} disabled={purchaseLoading}>
+                  <Text style={styles.purchaseText}>{purchaseLoading ? 'Purchasing...' : 'Purchase Premium'}</Text>
+                </TouchableOpacity>
+
+                <View style={{ height: 8 }} />
+
+                <TouchableOpacity style={styles.ghostButton} onPress={onRestore}>
+                  <Text style={styles.ghostText}>Restore purchases</Text>
+                </TouchableOpacity>
+
+                <View style={{ height: 10 }} />
+
                 <TouchableOpacity style={styles.ghostButton} onPress={onClose}>
                   <Text style={styles.ghostText}>Close</Text>
                 </TouchableOpacity>
@@ -139,9 +176,8 @@ const getStyles = (theme) =>
     tileActive: { borderColor: theme.colors.primary, borderWidth: 2 },
     tilePalette: { flexDirection: 'row', width: '100%', height: 28, borderRadius: 6, overflow: 'hidden' },
     swatch: { flex: 1 },
-    tileLabel: { marginTop: 8, fontWeight: '700', color: theme.colors.text }
-    ,
+    tileLabel: { marginTop: 8, fontWeight: '700', color: theme.colors.text },
     lockOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.45)', borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
     lockIcon: { fontSize: 18, color: '#fff', marginBottom: 6 },
-    lockText: { color: '#fff', fontWeight: '800' }
+    lockText: { color: '#fff', fontWeight: '800' },
   });

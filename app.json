@@ -4,7 +4,30 @@
     "slug": "randompicker",
     "version": "1.0.0",
     "sdkVersion": "54.0.0",
-    "platforms": ["ios", "android", "web"],
-    "assetBundlePatterns": ["**/*"]
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-2054937504927228~2110784559",
+          "iosAppId": "ca-app-pub-2054937504927228~2110784559"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "36230fef-058d-4f1e-9a8e-26347d4e0096"
+      }
+    },
+    "android": {
+      "package": "com.inotec_resources.randompicker"
+    }
   }
 }

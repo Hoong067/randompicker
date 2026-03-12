@@ -1,0 +1,5 @@
+<!-- Add inside the <application> tag of android/app/src/main/AndroidManifest.xml -->
+<meta-data android:name="com.google.android.gms.ads.APPLICATION_ID"
+           android:value="ca-app-pub-2054937504927228~2110784559"/>
+
+<!-- Also ensure you have the Google Mobile Ads dependency added and perform an EAS/prebuild when necessary. -->

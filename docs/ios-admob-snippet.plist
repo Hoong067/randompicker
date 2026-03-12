@@ -1,0 +1,5 @@
+<!-- Add to ios/<YourApp>/Info.plist -->
+<key>GADApplicationIdentifier</key>
+<string>ca-app-pub-2054937504927228~2110784559</string>
+
+<!-- After adding this, rebuild your iOS app (EAS/prebuild) so the change takes effect. -->
