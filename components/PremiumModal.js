@@ -70,14 +70,14 @@ export default function PremiumModal({ visible, onClose, isPremium, onPurchase, 
               <Text style={styles.info}>Unlock UI themes and advanced spin controls.</Text>
               <FlatList data={themeEntries} renderItem={renderTile} keyExtractor={(item) => item[0]} horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12 }} />
               <View style={{ marginTop: 16 }}>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   style={[styles.saveButton, selectedTheme !== freeThemeName && { opacity: 0.5 }]}
                   onPress={() => onSave({ themeName: selectedTheme, min: roundsMin, max: roundsMax })}
                   disabled={selectedTheme !== freeThemeName}
                 >
                   <Text style={styles.saveText}>Use Free Theme</Text>
                 </TouchableOpacity>
-                <View style={{ height: 10 }} />
+                <View style={{ height: 10 }} /> */}
                 <TouchableOpacity style={styles.purchaseButton} onPress={onPurchase}>
                   <Text style={styles.purchaseText}>Purchase Premium (simulate)</Text>
                 </TouchableOpacity>
